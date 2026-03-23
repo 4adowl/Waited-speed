@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Internet Speed Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      text-align: center;
+      min-height: 200vh;
+      margin: 0;
+      padding: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      background: #00c3ff;
+      color: #0f172a;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    button:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+    #status {
+      margin: 15px 0;
+      font-size: 20px;
+    }
+    .circle {
+      margin: 30px auto;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      border: 6px solid #00c3ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 32px;
+      font-weight: bold;
+    }
+    .features {
+      margin-top: 40px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      padding: 20px;
+    }
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 25px;
+      text-align: center;
+      transition: .3s;
+    }
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #00c3ff;
+    }
+    .card img {
+      width: 70px;
+      margin-bottom: 10px;
+    }
+    .card p {
+      font-size: 14px;
+      color: #00c3ff;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Internet Speed Test</h1>
+  <button id="btn" onclick="start()">Go</button>
+  <div id="status">Click Go to start</div>
+  <div class="circle" id="speedCircle">0 Mbps</div>
+  <div class="features">
+    <div class="card">
+      <img src="https://img.icons8.com/fluency/96/smartphone.png"/>
+      <p>Mobile Apps</p>
+    </div>
+    <div class="card">
+      <img src="https://img.icons8.com/fluency/96/wifi.png"/>
+      <p>Troubleshoot Wifi</p>
+    </div>
+    <div class="card">
+      <img src="https://img.icons8.com/fluency/96/globe.png"/>
+      <p>Check for Outages</p>
+    </div>
+    <div class="card">
+      <img src="https://img.icons8.com/fluency/96/router.png"/>
+      <p>Prepare to Talk to ISP</p>
+    </div>
+    <div class="card">
+      <img src="https://img.icons8.com/fluency/96/speed.png"/>
+      <p>Speed Test</p>
+    </div>
+    <div class="card">
+      <img src="https://img.icons8.com/fluency/96/help.png"/>
+      <p>Get Help</p>
+    </div>
+  </div>
+  <script>
+    async function start() {
+      const btn = document.getElementById("btn");
+      const status = document.getElementById("status");
+      const circle = document.getElementById("speedCircle");
+
+      if(btn) btn.disabled = true;
+      status.innerText = "Testing...";
+
+      try {
+        let speedData = [];
+        let iterations = 6;
+
+        for(let i = 0; i < iterations; i++) {
+          const startTime = performance.now();
+          const url = "https://upload.wikimedia.org/wikipedia/commons/3/3f/Fronalpstock_big.jpg?cache=" + Math.random();
+          const response = await fetch(url);
+          const blob = await response.blob();
+          const endTime = performance.now();
+
+          const durationSec = (endTime - startTime)/1000;
+          const speedMbps = (blob.size * 8 / durationSec)/1000000;
+
+          speedData.push(speedMbps);
+          const avgSpeed = speedData.reduce((a,b) => a+b, 0) / speedData.length;
+
+          circle.innerText = avgSpeed.toFixed(2) + " Mbps";
+
+          await new Promise(r => setTimeout(r, 500));
+        }
+
+        status.innerText = "Done ✅";
+
+      } catch(e) {
+        console.error(e);
+        status.innerText = "Error ❌";
+        circle.innerText = "0 Mbps";
+      }
+
+      if(btn) btn.disabled = false;
+    }
+  </script>
+</body>
+</html>
